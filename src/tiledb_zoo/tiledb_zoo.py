@@ -27,6 +27,11 @@ class FeedstockProject:
                 )
 
                 await proc.communicate()
+                logging.info(f"Downloading {self.name} finished")
+
+                if proc.returncode != 0:
+                    logging.error(f"{self.name} download failed with exit code: {proc.returncode}")
+
                 return proc.returncode
 
     async def build(self):
@@ -42,6 +47,11 @@ class FeedstockProject:
                 )
 
                 await proc.communicate()
+                logging.info(f"Building {self.name} finished")
+
+                if proc.returncode != 0:
+                    logging.error(f"{self.name} build failed with exit code: {proc.returncode}")
+
                 return proc.returncode
 
 def load_config(path: Optional[Path]) -> dict:
@@ -58,7 +68,9 @@ def load_config(path: Optional[Path]) -> dict:
 
 
 async def build_projects(config: dict):
-    output_dir = (Path("build"))
+    logging.info("Start build projects")
+
+    output_dir = Path("build")
     output_dir.mkdir(exist_ok = True)
 
     projects = [
@@ -66,10 +78,14 @@ async def build_projects(config: dict):
             for name, config in config["projects"].items()
     ]
 
+    logging.info("Downloading all projects")
     if not all(ec == 0 for ec in await asyncio.gather(*[project.download() for project in projects])):
         logging.error("One of the download commands failed")
         return
 
+    logging.info("Building all projects")
     if not all(ec == 0 for ec in await asyncio.gather(*[project.build() for project in projects])):
         logging.error("One of the build commands failed")
         return
+
+    logging.info("Finished")
