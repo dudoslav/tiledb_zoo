@@ -19,7 +19,7 @@ class FeedstockProject:
 
         # TODO: Take this as arg
         self.env = {
-            "CPU_COUNT": os.cpu_count()
+            "CPU_COUNT": str(os.cpu_count())
         }
         logging.info(f"Using environment variables: {self.env}")
 
