@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 import logging
 import sys
+import os
 
 import yaml
 
@@ -15,6 +16,12 @@ class FeedstockProject:
         self.ref = project_config["ref"]
         self.config = project_config["config"]
         self.output_dir = output_dir
+
+        # TODO: Take this as arg
+        self.env = {
+            "CPU_COUNT": os.cpu_count()
+        }
+        logging.info(f"Using environment variables: {self.env}")
 
     async def download(self):
         logging.info(f"Downloading {self.name}")
@@ -45,7 +52,7 @@ class FeedstockProject:
                     stdout=outfile,
                     stderr=errfile,
                     cwd=self.output_dir / self.name,
-                    env={"CPU_COUNT": "64"}
+                    env=self.env
                 )
 
                 await proc.communicate()
