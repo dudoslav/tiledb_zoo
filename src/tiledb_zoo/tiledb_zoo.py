@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 from typing import Optional
 import logging
+import sys
 
 import yaml
 
@@ -39,8 +40,8 @@ class FeedstockProject:
 
         with open(self.output_dir / f"{self.name}_build_out.txt", "w") as outfile:
             with open(self.output_dir / f"{self.name}_build_err.txt", "w") as errfile:
-                proc = await asyncio.create_subprocess_shell(
-                     f"python build-locally.py {self.config}",
+                proc = await asyncio.create_subprocess_exec(
+                    sys.executable, "build-locally.py", self.config,
                     stdout=outfile,
                     stderr=errfile,
                     cwd=self.output_dir / self.name,
