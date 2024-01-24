@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tiledb-zoo"
+dynamic = ["version", "dependencies"]
+authors = [
+    { name="Example Author", email="author@example.com" },
+]
+description = "A small example package"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+tiledb_zoo = "tiledb_zoo.cli"
+
+[tool.setuptools.dynamic]
+dependencies = {file = "requirements.txt"}
+
+[tool.setuptools.package-data]
+"*" = ["*.yml", "*.yaml"]
