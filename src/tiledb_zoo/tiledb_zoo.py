@@ -43,7 +43,8 @@ class FeedstockProject:
                      f"python build-locally.py {self.config}",
                     stdout=outfile,
                     stderr=errfile,
-                    cwd=self.output_dir / self.name
+                    cwd=self.output_dir / self.name,
+                    env={"CPU_COUNT": "64"}
                 )
 
                 await proc.communicate()
