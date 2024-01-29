@@ -8,7 +8,7 @@ projects:
     type: feedstock
     ref: dev
     url: "https://github.com/conda-forge/tiledb-py-feedstock"
-    extra_meta:
+    variants:
       python_impl: cpython
   tiledb-vcf:
     depends: tiledb-py

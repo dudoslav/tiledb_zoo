@@ -16,7 +16,7 @@ class FeedstockProject:
         self.ref = project_config["ref"]
         self.output_dir = output_dir
         self.depends = project_config.get("depends", None)
-        self.extra_meta = project_config.get("extra_meta", None)
+        self.variants = project_config.get("variants", None)
 
         # TODO: Take this as arg
         self.env = {
@@ -50,12 +50,11 @@ class FeedstockProject:
             sys.executable, "-m", "conda", "build", ".", "--use-local"
         ]
 
-        if self.extra_meta:
-            command.append("--extra-meta")
-            for key, val in self.extra_meta.items():
-                command.append(f"{key}={val}")
+        if self.variants:
+            command.append("--variants")
+            command.append(yaml.dump(self.variants))
 
-        print(command)
+        logging.info(command)
 
         with open(self.output_dir / f"{self.name}_build_out.txt", "w") as outfile:
             with open(self.output_dir / f"{self.name}_build_err.txt", "w") as errfile:
