@@ -52,7 +52,7 @@ class FeedstockProject:
 
         extra_meta = ""
         if self.extra_meta:
-            extra_meta = "-m "
+            extra_meta = "--extra-meta "
             for key, val in self.extra_meta.items():
                 extra_meta += f"{key}={val} "
 
