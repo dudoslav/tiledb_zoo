@@ -15,6 +15,7 @@ class FeedstockProject:
         self.url = project_config["url"]
         self.ref = project_config["ref"]
         self.output_dir = output_dir
+        self.config = project_config.get("config", None)
         self.depends = project_config.get("depends", None)
         self.variants = project_config.get("variants", None)
 
@@ -49,6 +50,10 @@ class FeedstockProject:
         command = [
             sys.executable, "-m", "conda", "build", ".", "--use-local"
         ]
+
+        if self.config:
+            command.append("-m")
+            command.append(f".ci_support/{self.config}.yaml")
 
         if self.variants:
             command.append("--variants")
