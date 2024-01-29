@@ -48,7 +48,8 @@ class FeedstockProject:
         with open(self.output_dir / f"{self.name}_build_out.txt", "w") as outfile:
             with open(self.output_dir / f"{self.name}_build_err.txt", "w") as errfile:
                 proc = await asyncio.create_subprocess_exec(
-                    sys.executable, "build-locally.py", self.config,
+                    f"conda build recipe",
+                    # sys.executable, "build-locally.py", self.config,
                     stdout=outfile,
                     stderr=errfile,
                     cwd=self.output_dir / self.name,
@@ -92,9 +93,9 @@ async def build_projects(config: dict):
         logging.error("One of the download commands failed")
         return
 
-    logging.info("Building all projects")
-    if not all(ec == 0 for ec in await asyncio.gather(*[project.build() for project in projects])):
-        logging.error("One of the build commands failed")
-        return
+    # logging.info("Building all projects")
+    # if not all(ec == 0 for ec in await asyncio.gather(*[project.build() for project in projects])):
+    #     logging.error("One of the build commands failed")
+    #     return
 
     logging.info("Finished")
