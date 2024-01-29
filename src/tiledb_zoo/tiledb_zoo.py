@@ -46,16 +46,24 @@ class FeedstockProject:
     async def build(self):
         logging.info(f"Building {self.name}")
 
+        command = [
+            sys.executable, "-m", "conda", "build", ".", "--use-local"
+        ]
+
         extra_meta = ""
         if self.extra_meta:
             extra_meta = "-m "
             for key, val in self.extra_meta.items():
                 extra_meta += f"{key}={val} "
 
+            command.append(extra_meta)
+
+        print(command)
+
         with open(self.output_dir / f"{self.name}_build_out.txt", "w") as outfile:
             with open(self.output_dir / f"{self.name}_build_err.txt", "w") as errfile:
                 proc = await asyncio.create_subprocess_exec(
-                    sys.executable, "-m", "conda", "build", ".", "--use-local", extra_meta,
+                    *command,
                     stdout=outfile,
                     stderr=errfile,
                     cwd=self.output_dir / self.name,
