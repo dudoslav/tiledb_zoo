@@ -50,13 +50,10 @@ class FeedstockProject:
             sys.executable, "-m", "conda", "build", ".", "--use-local"
         ]
 
-        extra_meta = ""
         if self.extra_meta:
-            extra_meta = "--extra-meta "
+            command.append("--extra-meta")
             for key, val in self.extra_meta.items():
-                extra_meta += f"{key}={val} "
-
-            command.append(extra_meta)
+                command.append(f"{key}={val}")
 
         print(command)
 
