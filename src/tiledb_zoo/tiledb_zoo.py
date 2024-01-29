@@ -14,8 +14,8 @@ class FeedstockProject:
         self.name = name
         self.url = project_config["url"]
         self.ref = project_config["ref"]
-        self.config = project_config["config"]
         self.output_dir = output_dir
+        self.depends = project_config.get("depends", None)
 
         # TODO: Take this as arg
         self.env = {
@@ -48,7 +48,7 @@ class FeedstockProject:
         with open(self.output_dir / f"{self.name}_build_out.txt", "w") as outfile:
             with open(self.output_dir / f"{self.name}_build_err.txt", "w") as errfile:
                 proc = await asyncio.create_subprocess_exec(
-                    f"conda build recipe",
+                    f"conda build . --use-local",
                     # sys.executable, "build-locally.py", self.config,
                     stdout=outfile,
                     stderr=errfile,
@@ -63,6 +63,30 @@ class FeedstockProject:
                     logging.error(f"{self.name} build failed with exit code: {proc.returncode}")
 
                 return proc.returncode
+
+
+def resolve_dependencies(projects: list[FeedstockProject]) -> list[list[FeedstockProject]]:
+    # NOTE: There must be a better way to do this, but for our 3 level dependencies this is fine
+    result = [[project for project in projects if project.depends is None]]
+
+    if not result:
+        raise AttributeError("No projects without dependencies found")
+
+    # NOTE: This is not really optimal
+    while True:
+        current_layer = []
+        for project in projects:
+            flat = [p for layer in result for p in layer]
+            if project.depends in [p.name for p in flat] and project not in flat:
+                current_layer.append(project)
+
+        if current_layer:
+            result.append(current_layer)
+        else:
+            break
+
+    return result
+
 
 def load_config(path: Optional[Path]) -> dict:
     default_config_path = Path(__file__).parent / DEFAULT_CONFIG_NAME
@@ -93,9 +117,14 @@ async def build_projects(config: dict):
         logging.error("One of the download commands failed")
         return
 
-    # logging.info("Building all projects")
-    # if not all(ec == 0 for ec in await asyncio.gather(*[project.build() for project in projects])):
-    #     logging.error("One of the build commands failed")
-    #     return
+    layers = resolve_dependencies(projects)
+    logging.info(f"Building in {len(layers)} layers")
+
+    for layer in layers:
+        logging.info(f"Building layer {[p.name for p in layer]}")
+
+        if not all(ec == 0 for ec in await asyncio.gather(*[project.build() for project in layer])):
+            logging.error("One of the build commands failed")
+            return
 
     logging.info("Finished")

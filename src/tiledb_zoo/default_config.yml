@@ -3,24 +3,23 @@ projects:
     type: feedstock
     ref: dev
     url: "https://github.com/conda-forge/tiledb-feedstock"
-    config: "linux_64_gcsgcs_enabledlibcurl8openssl3"
   tiledb-py:
+    depends: tiledb
     type: feedstock
     ref: dev
     url: "https://github.com/conda-forge/tiledb-py-feedstock"
-    config: "linux_64_numpy1.22python3.8.____cpython"
-  # tiledb-vcf:
-  #   type: feedstock
-  #   ref: master
-  #   url: "https://github.com/TileDB-Inc/tiledb-vcf-feedstock.git"
-  #   config: "linux_64_"
-  # tiledb-soma:
-  #   type: feedstock
-  #   ref: master
-  #   url: "https://github.com/TileDB-Inc/tiledbsoma-feedstock.git"
-  #   config: "linux_64_"
-  # tiledb-vector-search:
-  #   type: feedstock
-  #   ref: main
-  #   url: "https://github.com/TileDB-Inc/tiledb-vector-search-feedstock.git"
-  #   config: "linux_64_numpy1.22python3.9.____cpython"
+  tiledb-vcf:
+    depends: tiledb-py
+    type: feedstock
+    ref: master
+    url: "https://github.com/TileDB-Inc/tiledb-vcf-feedstock.git"
+  tiledb-soma:
+    depends: tiledb-py
+    type: feedstock
+    ref: master
+    url: "https://github.com/TileDB-Inc/tiledbsoma-feedstock.git"
+  tiledb-vector-search:
+    depends: tiledb-py
+    type: feedstock
+    ref: main
+    url: "https://github.com/TileDB-Inc/tiledb-vector-search-feedstock.git"
