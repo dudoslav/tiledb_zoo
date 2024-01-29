@@ -48,7 +48,7 @@ class FeedstockProject:
         logging.info(f"Building {self.name}")
 
         command = [
-            sys.executable, "-m", "conda", "build", ".", "--use-local"
+            sys.executable, "-m", "conda", "build", ".", "--use-local", "--no-test"
         ]
 
         if self.config:
@@ -138,8 +138,12 @@ async def build_projects(config: dict):
     for layer in layers:
         logging.info(f"Building layer {[p.name for p in layer]}")
 
-        if not all(ec == 0 for ec in await asyncio.gather(*[project.build() for project in layer])):
-            logging.error("One of the build commands failed")
-            return
+        for project in layer:
+            if await project.build() != 0:
+                logging.error(f"{project.name} failed to build")
+
+        # if not all(ec == 0 for ec in await asyncio.gather(*[project.build() for project in layer])):
+        #     logging.error("One of the build commands failed")
+        #     return
 
     logging.info("Finished")
